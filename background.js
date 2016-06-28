@@ -1,23 +1,31 @@
 chrome.browserAction.onClicked.addListener(function(){
 
+  var check ='if(document.getElementById("memento")){document.getElementById("memento").remove();}else{';
+
   var setBody = 'var body = document.getElementsByTagName("html")[0];';
-
   var lastChild = 'var LastChild = body.lastChild;';
-
-  var createElement = 'var newElement = document.createElement("div");';
+  var createElement = 'var newElement = document.createElement("iframe");';
   var idElement = 'newElement.id = "memento";';
+  var windowSize = 'var width = window.innerWidth; var height = window.innerHeight;';
 
-  var windowSize = 'var width = window.innerWidth-20; var height = window.innerHeight-20;';
 
-
-  var style = ['newElement.style["background"] = "blue";',
+  var style = [
+  'newElement.innerHTML = "Hello";',
+  'newElement.src = "https://bravaudio.herokuapp.com/#/";',
+  'newElement.style["font-size"] = "80px";',
+  'newElement.style["color"] = "white";',
+  'newElement.style["display"] = "flex";',
+  'newElement.style["justify-content"] = "center";',
+  'newElement.style["align-items"] = "center";',
+  'newElement.style["background"] = "black";',
   'newElement.style["border-style"] = "dashed";',
-  'newElement.style["border-width"] = "10px";',
+  'newElement.style["border-width"] = "1px";',
   'newElement.style["position"] = "fixed";',
   'newElement.style["height"] = height+"px";',
   'newElement.style["width"] = width+"px";',
-  'newElement.style["z-index"] = 9001;',
-  'newElement.style["cursor"] = "crosshair";'];
+  'newElement.style["z-index"] = 2147483647;',
+  'newElement.style["cursor"] = "crosshair";',
+  'newElement.style["opacity"] = "0.8";'];
 
   var injectElement = 'body.insertBefore(newElement, LastChild);';
 
@@ -31,18 +39,9 @@ chrome.browserAction.onClicked.addListener(function(){
 
   var inject = injectElement;
 
-  var total = setup+ windowSize + styling + inject;
+  var total = check + setup+ windowSize + styling + inject+"}";
 
-  chrome.tabs.executeScript({
-      code: total
-  });
-
-  // chrome.tabs.executeScript(null,
-  //     {code:"document.body.style.backgroundColor='" + e.target.id + "'"});
-  // window.close();
-  //
-
-
+  chrome.tabs.executeScript({code: total});
 
 
 });
