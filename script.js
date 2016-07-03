@@ -1,4 +1,4 @@
-
+//Memento script file
 
 if(document.getElementById("memento")){
   document.getElementById("memento").remove();
@@ -7,8 +7,10 @@ if(document.getElementById("memento")){
   var body = document.getElementsByTagName("html")[0];
   var LastChild = body.lastChild;
 
-  var frameTopLeft;
-  var frameBottomRight;
+  var frameFirst;
+  var frameSecond;
+
+
 
   var getCoord = function(tl,br){//sets the top left and bottom right
     var x1,x2,y1,y2;
@@ -17,13 +19,17 @@ if(document.getElementById("memento")){
     return [[x1,y1],[x2,y2]];
   };
 
-
+  var frameClick;
+  var clickDrag = false;
+  var frameOffset;
+  var gframe;
   var createFrame = function(firstCoord,secondCoord){
     if(!document.getElementById("snap-frame")){
-
       var coord = getCoord(firstCoord,secondCoord);
       var borderWidth = 2;
+
       var frame = document.createElement("div");
+      gframe = frame;
       frame.id = "snap-frame";
       frame.style['width'] = coord[1][0] - coord[0][0] + "px";
       frame.style['height'] = coord[1][1] - coord[0][1] + "px";
@@ -32,12 +38,26 @@ if(document.getElementById("memento")){
       frame.style['left'] = coord[0][0]-borderWidth + "px";
       frame.style['border-style'] = "dashed";
       frame.style['border-width'] = borderWidth + "px";
+      frame.style["z-index"] = 2147483647;
+
+      frame.addEventListener('mousedown', function(e){
+        frameClick = [e.clientX, e.clientY];
+        frameOffset = [parseInt(frame.style['left'].slice(0,frame.style['left'].length-2)) ,parseInt(frame.style['top'].slice(0,frame.style['top'].length-2))]
+        clickDrag = true;
+      });
+
+      frame.addEventListener('mouseup', function(e){
+        clickDrag = false;
+      });
+
+      // frame.addEventListener('mouseleave', function(e){
+      //   clickDrag = false;
+      // });
+
+
       content.appendChild(frame);
     }
   };
-
-
-
 
   //content
   var content = document.createElement("div");
@@ -51,6 +71,25 @@ if(document.getElementById("memento")){
   content.style["z-index"] = 2147483647;
   content.style["cursor"] = "crosshair";
 
+  content.addEventListener('mousemove', function(e){
+
+    console.log(parseInt(gframe.style['top'].slice(0,gframe.style['top'].length-2)))
+    if(clickDrag){
+      var xDiff = e.clientX - frameClick[0];
+      var yDiff = e.clientY - frameClick[1];
+
+      frameClick[0] =  frameClick[0] + xDiff;
+      frameClick[1] = frameClick[1] + yDiff;
+
+      gframe.style['left'] = parseInt(gframe.style['left'].slice(0,gframe.style['left'].length-2)) + xDiff + "px" ;
+      gframe.style['top'] = parseInt(gframe.style['top'].slice(0,gframe.style['top'].length-2)) + yDiff +"px";
+
+    }
+
+
+
+  });
+
   //background
   var background = document.createElement("div");
   background.id = "memento-background";
@@ -61,20 +100,17 @@ if(document.getElementById("memento")){
   background.style["opacity"] = "0.1";
   content.appendChild(background);
 
-
-
   content.addEventListener('mousedown', function(ev){
       //on mouse down create a frame element
       console.log(ev);
-      frameTopLeft = [ev.clientX, ev.clientY];
+      frameFirst = [ev.clientX, ev.clientY];
   });
 
-  content.addEventListener('mouseup', function(ev){
+  content.addEventListener('mouseup', function(e){
       //on mouse down create a frame element
-      console.log(ev);
-      frameBottomRight = [ev.clientX, ev.clientY,];
-      createFrame(frameTopLeft,frameBottomRight);
 
+      frameSecond = [e.clientX, e.clientY];
+      createFrame(frameFirst,frameSecond);
   });
   //
 
